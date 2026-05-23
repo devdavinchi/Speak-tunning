@@ -1,0 +1,2 @@
+# Speak-tunning
+I had a problem where every ai i spoke to like grok, chatGPT and even claude always replied when i paused for a second and used too many filler words , I want to make this app so that the ai doesn't do that.
