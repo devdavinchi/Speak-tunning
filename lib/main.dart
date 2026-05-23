@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:speak_tuning/widgets/stat_card.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,9 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.dark(),
-      ),
+      theme: ThemeData(colorScheme: ColorScheme.dark()),
       home: const HomeScreen(),
     );
   }
@@ -29,11 +28,11 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFF0A0A0A),
         title: const Text(
-          "SpeakTuning",
+          "Speak Tuning",
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
-            fontSize: 24,
+            fontSize: 28,
           ),
         ),
         centerTitle: true,
@@ -58,10 +57,7 @@ class HomeScreen extends StatelessWidget {
             const Text(
               "Speak naturally.\nAI corrects your filler words.",
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 16,
-              ),
+              style: TextStyle(color: Colors.grey, fontSize: 16),
             ),
             const SizedBox(height: 60),
 
@@ -82,11 +78,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.mic,
-                  color: Colors.white,
-                  size: 70,
-                ),
+                child: const Icon(Icons.mic, color: Colors.white, size: 70),
               ),
             ),
             const SizedBox(height: 30),
@@ -94,10 +86,7 @@ class HomeScreen extends StatelessWidget {
             // instruction
             const Text(
               "Tap to start speaking",
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.grey, fontSize: 14),
             ),
             const SizedBox(height: 60),
 
@@ -105,51 +94,13 @@ class HomeScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _StatCard(title: "Sessions", value: "0"),
-                _StatCard(title: "Filler Words", value: "0"),
-                _StatCard(title: "Score", value: "—"),
+                StatCard(title: "Sessions", value: "0"),
+                StatCard(title: "Filler Words", value: "0"),
+                StatCard(title: "Score", value: "—"),
               ],
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final String title;
-  final String value;
-
-  const _StatCard({required this.title, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 12,
-            ),
-          ),
-        ],
       ),
     );
   }
