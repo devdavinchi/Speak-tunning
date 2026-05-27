@@ -50,7 +50,7 @@ class HomeScreen extends StatelessWidget {
               MicButton(onTap: () => debugPrint("mic clicked")),
               const SizedBox(height: 30),
 
-              // instruction
+              // instructi`
               const Text(
                 "Tap to start speaking",
                 style: TextStyle(color: Colors.grey, fontSize: 14),
