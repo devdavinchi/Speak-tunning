@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:speak_tuning/widgets/mic_button.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String spokenText = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,12 +51,11 @@ class HomeScreen extends StatelessWidget {
                 style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
               const SizedBox(height: 60),
-
+              Text(spokenText),
               // mic button
               MicButton(onTap: () => debugPrint("mic clicked")),
               const SizedBox(height: 30),
 
-              // instructi`
               const Text(
                 "Tap to start speaking",
                 style: TextStyle(color: Colors.grey, fontSize: 14),
