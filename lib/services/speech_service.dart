@@ -7,4 +7,10 @@ class SpeechService {
   Future<void> initialize() async {
     await _speech.initialize();
   }
+
+  Future<void> startListening(Function(String) onResult) async {
+    await _speech.listen(onResult: (result) {
+      onResult(result.recognizedWords);
+    });
+  }
 }
