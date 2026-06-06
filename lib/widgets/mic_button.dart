@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class MicButton extends StatefulWidget {
   final VoidCallback onTap;
+
   const MicButton({super.key, required this.onTap});
 
   @override

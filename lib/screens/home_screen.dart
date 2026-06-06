@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:speak_tuning/services/speech_service.dart';
 import 'package:speak_tuning/widgets/mic_button.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -9,6 +10,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _speechService.initialize();
+  }
+
+  final SpeechService _speechService = SpeechService();
   String spokenText = '';
   @override
   Widget build(BuildContext context) {
@@ -53,7 +61,15 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 60),
               Text(spokenText),
               // mic button
-              MicButton(onTap: () => debugPrint("mic clicked")),
+              MicButton(
+                onTap: () {
+                  _speechService.startListening((result) {
+                    setState(() {
+                      spokenText = result;
+                    });
+                  });
+                },
+              ),
               const SizedBox(height: 30),
 
               const Text(
