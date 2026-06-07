@@ -1,0 +1,14 @@
+[33m6c95d7c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m chore: gemini api
+[33mc7d061e[m chore:gemini api
+[33mdcd41d3[m[33m ([m[1;31morigin/main[m[33m)[m chore: mic testing fail v1
+[33m43ad725[m chore: true
+[33ma295366[m chore:speech service updates
+[33m9c3ba22[m chore: add speech service
+[33m6fa01b2[m  chore: adding dependencies
+[33m51a1ecd[m changes
+[33mabd0d70[m feat:seperate files for home screen and mic button in their respective folders - seperating each section of codes in each section of folders are crutial for debugging in the end stages of the app - also it looks professional
+[33mc89cfd9[m chore: just seperating in another file
+[33m9db6e9d[m Revise README to describe app's functionality
+[33m28beb50[m Keep local README version
+[33mb5d133f[m feat(UI): adding the front page of the speaking UI, UI only right now no logic
+[33mae119aa[m Initial commit
