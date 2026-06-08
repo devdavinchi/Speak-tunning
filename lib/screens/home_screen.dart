@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:speak_tuning/services/gemini_service.dart';
 import 'package:speak_tuning/services/speech_service.dart';
 import 'package:speak_tuning/widgets/mic_button.dart';
 
@@ -17,6 +18,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   final SpeechService _speechService = SpeechService();
+  final GeminiService _geminiService = GeminiService();
+  String geminiResponse = "";
   String spokenText = '';
   @override
   Widget build(BuildContext context) {
@@ -60,12 +63,17 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 60),
               Text(spokenText),
+              Text(geminiResponse),
               // mic button
               MicButton(
                 onTap: () {
-                  _speechService.startListening((result) {
+                  _speechService.startListening((result) async {
                     setState(() {
                       spokenText = result;
+                    });
+                    final response = await _geminiService.analyzeText(result);
+                    setState(() {
+                      geminiResponse = response;
                     });
                   });
                 },

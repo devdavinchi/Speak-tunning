@@ -14,15 +14,7 @@ class SpeechService {
   }
 
   Future<void> startListening(Function(String) onResult) async {
-    bool available = await _speech.initialize();
-    if (available) {
-      await _speech.listen(
-        onResult: (result) {
-          onResult(result.recognizedWords);
-        },
-      );
-      isListening = true;
-    }
+    onResult("Um I basically like you know want to test this");
   }
 
   Future<void> stopListening() async {
