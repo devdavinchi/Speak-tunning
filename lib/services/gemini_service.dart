@@ -22,22 +22,22 @@ class GeminiService {
               {
                 'text':
                     '''
-You are a speech coach. Analyze this spoken text:
+You are a speech coach. Analyze the following spoken text and its pause data:
 "$spokenText"
 
-Return only valid JSON. Do not use markdown.
-Use this exact shape:
+Reconstruct the exact spoken text. For every filler word you detect, wrap it in asterisks like **um**. For every pause indicated in the pause data, insert a marker exactly where it happened in the text like "..... [4.2 second pause]". 
+
+CRITICAL RULE: If the spoken text is just random gibberish or a collection of unrelated words, you must abort and return exactly this JSON and nothing else:
 {
   "score": 0,
-  "summary": "short overall feedback",
-  "fillerWords": ["word or phrase"],
-  "strengths": ["what went well"],
-  "tips": ["specific improvement tip"],
-  "spokenReply": "one short sentence the app can speak aloud"
+  "summary": "Random words detected. No feedback generated.",
+  "fillerWords": [],
+  "analyzedTranscript": "",
+  "improvedVersion": "",
+  "spokenReply": "I didn't catch a clear sentence."
 }
 
 Score should be from 0 to 100.
-Keep every list between 1 and 4 items.
 ''',
               },
             ],
@@ -45,9 +45,6 @@ Keep every list between 1 and 4 items.
         ],
       }),
     );
-
-    print('Status: ${response.statusCode}');
-    print('Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -72,10 +69,8 @@ Keep every list between 1 and 4 items.
         score: 0,
         summary: responseText,
         fillerWords: const [],
-        strengths: const [],
-        tips: const [
-          'Try speaking again so I can analyze your speech clearly.',
-        ],
+        analyzedTranscript: responseText,
+        improvedVersion: 'Could not generate an improved version.',
         spokenReply: responseText,
       );
     }

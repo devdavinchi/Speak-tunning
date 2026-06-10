@@ -36,6 +36,7 @@ class SpeechService {
       onResult: (result) {
         onResult(result.recognizedWords, result.finalResult);
       },
+      localeId: 'en_US',
       partialResults: true,
       cancelOnError: false,
       listenMode: ListenMode.dictation,

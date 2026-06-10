@@ -28,6 +28,15 @@ class SpeechSessionController {
     final now = DateTime.now();
 
     if (cleanResult != currentSpeechChunk) {
+      if (_lastSpeechChangeAt != null && currentSpeechChunk.isNotEmpty) {
+        final timeGap = now.difference(_lastSpeechChangeAt!);
+
+        if (timeGap.inMilliseconds > 1500 &&
+            !cleanResult.startsWith(currentSpeechChunk)) {
+          fullSpeechText = '$fullSpeechText $currentSpeechChunk'.trim();
+        }
+      }
+
       _detectPause(now);
     }
 

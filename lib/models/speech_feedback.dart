@@ -2,16 +2,16 @@ class SpeechFeedback {
   final int score;
   final String summary;
   final List<String> fillerWords;
-  final List<String> strengths;
-  final List<String> tips;
+  final String analyzedTranscript;
+  final String improvedVersion;
   final String spokenReply;
 
   const SpeechFeedback({
     required this.score,
     required this.summary,
     required this.fillerWords,
-    required this.strengths,
-    required this.tips,
+    required this.analyzedTranscript,
+    required this.improvedVersion,
     required this.spokenReply,
   });
 
@@ -20,8 +20,8 @@ class SpeechFeedback {
       score: 0,
       summary: '',
       fillerWords: [],
-      strengths: [],
-      tips: [],
+      analyzedTranscript: '',
+      improvedVersion: '',
       spokenReply: '',
     );
   }
@@ -31,8 +31,8 @@ class SpeechFeedback {
       score: json['score'] is int ? json['score'] : 0,
       summary: json['summary']?.toString() ?? '',
       fillerWords: _stringList(json['fillerWords']),
-      strengths: _stringList(json['strengths']),
-      tips: _stringList(json['tips']),
+      analyzedTranscript: json['analyzedTranscript']?.toString() ?? '',
+      improvedVersion: json['improvedVersion']?.toString() ?? '',
       spokenReply: json['spokenReply']?.toString() ?? '',
     );
   }
