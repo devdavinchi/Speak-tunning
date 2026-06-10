@@ -37,7 +37,11 @@ class SpeechService {
         onResult(result.recognizedWords, result.finalResult);
       },
       partialResults: true,
-      cancelOnError: true,
+      cancelOnError: false,
+      listenMode: ListenMode.dictation,
+      //listens for 5 mins, pauses holds for 30 seconds after sentence
+      listenFor: const Duration(minutes: 5),
+      pauseFor: const Duration(seconds: 30),
     );
   }
 

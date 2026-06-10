@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:speak_tuning/services/speech_feedback.dart';
+import 'package:speak_tuning/models/speech_feedback.dart';
 
 class GeminiService {
   String get _apiKey => dotenv.env['GEMINI_API_KEY'] ?? '';

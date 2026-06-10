@@ -3,7 +3,11 @@ import 'package:speak_tuning/services/gemini_service.dart';
 import 'package:speak_tuning/services/speech_service.dart';
 import 'package:speak_tuning/widgets/mic_button.dart';
 
-import '../services/speech_feedback.dart';
+import '../controllers/speech_session_controller.dart';
+import '../models/speech_feedback.dart';
+import '../widgets/feedback_list.dart';
+import '../widgets/info_card.dart';
+import '../widgets/score_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,9 +19,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final SpeechService _speechService = SpeechService();
   final GeminiService _geminiService = GeminiService();
+  final SpeechSessionController _session = SpeechSessionController();
 
   SpeechFeedback feedback = SpeechFeedback.empty();
-  String spokenText = '';
   bool isListening = false;
   bool isAnalyzing = false;
 
@@ -70,13 +74,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 28),
 
-              _InfoCard(
+              InfoCard(
                 title: 'Your speech',
                 icon: Icons.record_voice_over,
                 child: Text(
-                  spokenText.isEmpty
+                  _session.spokenText.isEmpty
                       ? 'Tap the mic and start speaking.'
-                      : spokenText,
+                      : _session.spokenText,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -87,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               if (isAnalyzing) ...[
                 const SizedBox(height: 16),
-                const _InfoCard(
+                const InfoCard(
                   title: 'AI feedback',
                   icon: Icons.auto_awesome,
                   child: Row(
@@ -107,23 +111,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ] else if (feedback.summary.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                _ScoreCard(score: feedback.score, summary: feedback.summary),
+                ScoreCard(score: feedback.score, summary: feedback.summary),
                 const SizedBox(height: 16),
-                _ListCard(
+                ListCard(
                   title: 'Filler words',
                   icon: Icons.hearing,
                   items: feedback.fillerWords,
                   emptyText: 'No clear filler words found.',
                 ),
                 const SizedBox(height: 16),
-                _ListCard(
+                ListCard(
                   title: 'What worked',
                   icon: Icons.check_circle_outline,
                   items: feedback.strengths,
                   emptyText: 'Speak a little longer to find strengths.',
                 ),
                 const SizedBox(height: 16),
-                _ListCard(
+                ListCard(
                   title: 'Try this next',
                   icon: Icons.tips_and_updates,
                   items: feedback.tips,
@@ -157,33 +161,21 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _handleMicTap() async {
     if (isListening) {
       await _speechService.stopListening();
-      setState(() => isListening = false);
-      return;
-    }
-
-    await _speechService.stopSpeaking();
-    setState(() {
-      spokenText = '';
-      feedback = SpeechFeedback.empty();
-      isListening = true;
-    });
-
-    await _speechService.startListening((result, isFinal) async {
-      if (result.trim().isEmpty) return;
-
-      setState(() {
-        spokenText = result;
-      });
-
-      if (!isFinal || isAnalyzing) return;
+      final textToAnalyze = _session.textWithPauseData.trim();
 
       setState(() {
         isListening = false;
+      });
+
+      if (textToAnalyze.isEmpty) return;
+
+      setState(() {
         isAnalyzing = true;
       });
 
-      final analyzedFeedback = await _geminiService.analyzeSpeech(result);
-
+      final analyzedFeedback = await _geminiService.analyzeSpeech(
+        textToAnalyze,
+      );
       if (!mounted) return;
       setState(() {
         feedback = analyzedFeedback;
@@ -191,149 +183,20 @@ class _HomeScreenState extends State<HomeScreen> {
       });
 
       await _speechService.speak(analyzedFeedback.spokenReply);
+      return;
+    }
+
+    await _speechService.stopSpeaking();
+    setState(() {
+      _session.reset();
+      feedback = SpeechFeedback.empty();
+      isListening = true;
     });
-  }
-}
 
-class _InfoCard extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final Widget child;
-
-  const _InfoCard({
-    required this.title,
-    required this.icon,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFF171717),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF2A2A2A)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: Colors.redAccent, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          child,
-        ],
-      ),
-    );
-  }
-}
-
-class _ScoreCard extends StatelessWidget {
-  final int score;
-  final String summary;
-
-  const _ScoreCard({required this.score, required this.summary});
-
-  @override
-  Widget build(BuildContext context) {
-    return _InfoCard(
-      title: 'AI feedback',
-      icon: Icons.auto_awesome,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 72,
-            height: 72,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Colors.redAccent.withValues(alpha: 0.14),
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.redAccent),
-            ),
-            child: Text(
-              '$score',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              summary,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                height: 1.4,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ListCard extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final List<String> items;
-  final String emptyText;
-
-  const _ListCard({
-    required this.title,
-    required this.icon,
-    required this.items,
-    required this.emptyText,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return _InfoCard(
-      title: title,
-      icon: icon,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: (items.isEmpty ? [emptyText] : items).map((item) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '- ',
-                  style: TextStyle(color: Colors.redAccent, fontSize: 16),
-                ),
-                Expanded(
-                  child: Text(
-                    item,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      height: 1.35,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
-      ),
-    );
+    await _speechService.startListening((result, isFinal) async {
+      setState(() {
+        _session.updateSpeech(result, isFinal);
+      });
+    });
   }
 }
