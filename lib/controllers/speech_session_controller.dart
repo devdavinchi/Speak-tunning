@@ -10,7 +10,7 @@ class SpeechSessionController {
 
   final List<SpeechPause> longPauses = [];
 
-  static const Duration longPauseThreshold = Duration(seconds: 5);
+  static const Duration longPauseThreshold = Duration(seconds: 3);
 
   void reset() {
     spokenText = '';
@@ -48,7 +48,6 @@ class SpeechSessionController {
       fullSpeechText = '$fullSpeechText $cleanResult'.trim();
       lastSavedChunk = cleanResult;
       currentSpeechChunk = '';
-      _lastSpeechChangeAt = now;
     }
   }
 

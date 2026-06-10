@@ -16,6 +16,8 @@ class GeminiService {
       Uri.parse(_url),
       headers: {'Content-Type': 'application/json', 'x-goog-api-key': _apiKey},
       body: jsonEncode({
+        // THIS IS THE HIDDEN SWITCH TO FORCE JSON MODE
+        'generationConfig': {'responseMimeType': 'application/json'},
         'contents': [
           {
             'parts': [
@@ -25,9 +27,13 @@ class GeminiService {
 You are a speech coach. Analyze the following spoken text and its pause data:
 "$spokenText"
 
-Reconstruct the exact spoken text. For every filler word you detect, wrap it in asterisks like **um**. For every pause indicated in the pause data, insert a marker exactly where it happened in the text like "..... [4.2 second pause]". 
+Reconstruct the exact spoken text. For every filler word you detect, wrap it in asterisks like **um**. 
 
-CRITICAL RULE: If the spoken text is just random gibberish or a collection of unrelated words, you must abort and return exactly this JSON and nothing else:
+CRITICAL RULE: You MUST add proper punctuation (periods, commas, question marks) to the reconstructed text so it reads naturally! Do NOT leave it as a raw stream of words.
+
+CRITICAL RULE: For EVERY pause indicated in the pause data, you MUST insert a visual marker exactly where it happened in the text, exactly like this: ".....".
+
+CRITICAL RULE: If the spoken text is just random gibberish or a collection of unrelated words, you must abort and return exactly this JSON:
 {
   "score": 0,
   "summary": "Random words detected. No feedback generated.",
@@ -37,7 +43,15 @@ CRITICAL RULE: If the spoken text is just random gibberish or a collection of un
   "spokenReply": "I didn't catch a clear sentence."
 }
 
-Score should be from 0 to 100.
+If it is NOT gibberish, you MUST return this exact JSON shape:
+{
+  "score": 85,
+  "summary": "short overall feedback",
+  "fillerWords": ["list of filler words used"],
+  "analyzedTranscript": "the exact text with **filler words** and ..... [4.2 second pause] inserted",
+  "improvedVersion": "a much better, professional version of the exact same sentence",
+  "spokenReply": "one short, encouraging sentence the app can speak aloud"
+}
 ''',
               },
             ],
